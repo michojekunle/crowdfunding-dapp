@@ -5,7 +5,7 @@ import { Sidebar, Navbar } from './components';
 
 const App = () => {
   return (
-    <div className='relative sm:p-8 -4 bg-[#13131A] flex flex-row min-h-screen'>
+    <div className='relative sm:p-8 p-4 bg-[#13131A] flex flex-row min-h-screen'>
       <div className='sm:flex hidden mr-10 relative'>
         <Sidebar />
       </div>
@@ -13,6 +13,9 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path='/' element={<Home />}/>
+          <Route path='/profile' element={<Profile />}/>
+          <Route path='/create-campaign' element={<CreateCampaign />}/>
+          <Route path='/campaign-details/:id' element={<CampaignDetails />}/>
         </Routes>
       </div>
     </div>
