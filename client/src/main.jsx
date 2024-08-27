@@ -8,11 +8,8 @@ import { StateContextProvider } from "./context";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-console.log(import.meta.env.VITE_THIRDWEB_SECRET_KEY);
-console.log(import.meta.env.VITE_THIRDWEB_CLIENT_ID);
-
 root.render(
-  <ThirdwebProvider activeChain="sepolia" clientId={`${import.meta.env.VITE_THIRDWEB_CLIENT_ID}`}>
+  <ThirdwebProvider activeChain="sepolia" clientId={`${import.meta.env.VITE_THIRDWEB_CLIENT_ID}`} desiredChainId={11155111}>
     <Router>
       <StateContextProvider>
         <App />
