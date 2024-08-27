@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 
 import { useStateContext } from "../context";
-import { CustomButton } from "../components";
+import { CustomButton, Loader } from "../components";
 import { calculateBarPercentage, daysLeft } from "../utils";
 import { thirdweb } from "../assets";
 import CountBox from "../components/CountBox";
 
 const CampaignDetails = () => {
   const { state } = useLocation();
-  const { getDonations, contract, address } = useStateContext();
+  const navigate = useNavigate();
+  const { donate, getDonations, contract, address } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState();
@@ -18,9 +19,30 @@ const CampaignDetails = () => {
 
   const remainingDays = daysLeft(state.deadline);
 
+  const fetchDonators = async () => {
+    const data = await getDonations(state.pId);
+
+    setDonators(data);
+  }
+
+  const handleDonate = async () => {
+    setIsLoading(true);
+
+    await donate(state.pId, amount);
+
+    navigate('/');
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    if(contract) {
+      fetchDonators();
+    }
+  }, [contract, address])
+
   return (
     <div className="">
-      {isLoading && "Loading..."}
+      {isLoading && <Loader />}
 
       <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
         <div className="flex-1 flex-col">
@@ -44,7 +66,7 @@ const CampaignDetails = () => {
         </div>
         <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px] ">
           <CountBox title="Days left" value={remainingDays} />
-          <CountBox title={`Raised of ${state.target}`} value={state.target} />
+          <CountBox title={`Raised of ${state.target}`} value={state.amountCollected} />
           <CountBox title="Total Backers" value={donators?.length ?? 0} />
         </div>
       </div>
@@ -88,7 +110,10 @@ const CampaignDetails = () => {
             </h4>
             <div className="mt-[20px] flex flex-col gap-4">
               {donators.length > 0 ? (
-                donators.map((donator) => <div>Donators</div>)
+                donators.map((item, index) => <div key={`${item.donator}-${index}`} className="flex justify-between items-center gap-4">
+                  <p className="font-epilogue font-normal text-[16px] text-[#808191] break-11 leading-[26px]">{index+1}. {item.donator}</p>
+                  <p className="">{item.donation}</p>
+                </div>)
               ) : (
                 <p className="font-epilogue font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
                   No donators yet be the first one
@@ -105,20 +130,21 @@ const CampaignDetails = () => {
             <p className="font-epilogue font-medium text-[20px] leading-[30px] text-center text-[#808191]">
               Fund the campaign
             </p>
-            <div className="mt-30px">
+            <div className="mt-[30px] space-y-5">
               <input
                 type="nummber"
                 placeholder="ETH 0.1"
-                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent fot-epilogue text-white text-[10px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
+                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[16px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 step={0.01}
               />
 
               <div className="mt-[20px] p-4 bg-[#13131a] rounded-[10px]">
-                <h4>Back it because you believe in it.</h4>
-                <p>Support the project for no reward, just becuase it speaks to you.</p>
+                <h4 className="font-epilogue font-semibold text-white text-[14px] leading-[22px]">Back it because you believe in it.</h4>
+                <p className="mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">Support the project for no reward, just becuase it speaks to you.</p>
               </div>
+              <CustomButton btnType="button" title={"Fund Campaign"} styles='w-full bg-[#8c6dfd]' handleClick={handleDonate}/>
             </div>
           </div>
         </div>
