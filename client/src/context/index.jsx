@@ -46,9 +46,9 @@ export const StateContextProvider = ({ children }) => {
       owner: campaign.owner,
       title: campaign.title,
       description: campaign.description,
-      target: ethers.formatEther(campaign.target.toString()),
+      target: ethers.utils.formatEther(campaign.target.toString()),
       deadline: campaign.deadline.toNumber(),
-      amountCollected: ethers.formatEther(campaign.amountCollected.toString()),
+      amountCollected: ethers.utils.formatEther(campaign.amountCollected.toString()),
       image: campaign.image,
       pId: i,
     }));
@@ -82,7 +82,7 @@ export const StateContextProvider = ({ children }) => {
     for (let i = 0; i < numberOfDonations; i++) {
       parsedDonations.push({
         donator: donations[0][i],
-        donation: ethers.formatEther(donations[1][i].toString()),
+        donation: ethers.utils.formatEther(donations[1][i].toString()),
       });
     }
 

@@ -30,7 +30,7 @@ const CreateCampaign = () => {
         setIsLoading(true);
         await createCampaign({
           ...form,
-          target: ethers.parseUnits(form.target, 18),
+          target: ethers.utils.parseUnits(form.target, 18),
         });
         setIsLoading(false);
         navigate("/");
